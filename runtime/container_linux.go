@@ -54,8 +54,32 @@ func (c *container) Pause() error {
 	args := c.runtimeArgs
 	args = append(args, "pause", c.id)
 	b, err := exec.Command(c.runtime, args...).CombinedOutput()
+
 	if err != nil {
-		return fmt.Errorf(string(b))
+		// *os.SyscallError{Syscall:"wait", Err:0xa}
+		fmt.Printf("Pause err: %#v\n", err)
+		/*
+			if tmpErr, ok := err.(*os.SyscallError); ok {
+				if tmpErr.Syscall == "wait" && tmpErr.Err.Error() == "no child processes" {
+					fmt.Printf("Skipping error - pause\n")
+					err = nil
+				} else {
+					fmt.Printf("sys:%q  err:%q\n", tmpErr.Syscall, tmpErr.Err)
+				}
+			} else {
+				fmt.Printf("Didn't cast\n")
+			}
+		*/
+	}
+
+	if err != nil {
+		fmt.Printf("Pause - err: %#v - b: %#v\n", err, b)
+		fmt.Printf("  runtime: %#v\n", c.runtime)
+		fmt.Printf("  args: %#v\n", args)
+		return err // fmt.Errorf(string(b))
+	}
+	if err != nil {
+		return err // fmt.Errorf(string(b))
 	}
 	return nil
 }
@@ -65,7 +89,27 @@ func (c *container) Resume() error {
 	args = append(args, "resume", c.id)
 	b, err := exec.Command(c.runtime, args...).CombinedOutput()
 	if err != nil {
-		return fmt.Errorf(string(b))
+		// *os.SyscallError{Syscall:"wait", Err:0xa}
+		fmt.Printf("Resume err: %#v\n", err)
+		/*
+			if tmpErr, ok := err.(*os.SyscallError); ok {
+				if tmpErr.Syscall == "wait" && tmpErr.Err.Error() == "no child processes" {
+					fmt.Printf("Skipping error - resume\n")
+					err = nil
+				} else {
+					fmt.Printf("sys:%q  err:%q\n", tmpErr.Syscall, tmpErr.Err)
+				}
+			} else {
+				fmt.Printf("Didn't cast\n")
+			}
+		*/
+	}
+
+	if err != nil {
+		fmt.Printf("Resume - err: %#v - b: %#v\n", err, b)
+		fmt.Printf("  runtime: %#v\n", c.runtime)
+		fmt.Printf("  args: %#v\n", args)
+		return err // fmt.Errorf(string(b))
 	}
 	return nil
 }
